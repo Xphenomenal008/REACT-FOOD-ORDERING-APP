@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myimg
+spec:
+  replicas: 2  # You are creating 2 replicas of the pod for high availability
+  selector:
+    matchLabels:
+      app: myimg
+  template:
+    metadata:
+      labels:
+        app: myimg
+    spec:
+      containers:
+      - name: myimg
+        image: xphenomenal/myimg:latest  # Make sure this image is built and pushed to Docker Hub
+        ports:
+        - containerPort: 80  # Nginx will listen on port 8080, but you are exposing 80 externally
