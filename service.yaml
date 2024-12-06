@@ -7,6 +7,6 @@ spec:
     app: myimg
   ports:
     - protocol: TCP
-      port: 80       # Port exposed on the service
-      targetPort: 80  # Port the container listens on
-  type: NodePort      # This will expose the service externally on a high port
+      port: 80 
+      targetPort: 80   
+  type: NodePort       
