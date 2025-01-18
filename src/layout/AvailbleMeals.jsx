@@ -1,64 +1,77 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react';
 import Card from './Card';
 import MealsItem from './MealsItem';
-const AvailbleMeals = () => {
-  const meals = [
-    {
-      id: "m1",
-      name: "Grilled Chicken Salad",
-      description: "Healthy grilled chicken with fresh veggies and tangy dressing",
-      price: 12.99,
-    },
-    {
-      id: "m2",
-      name: "Spaghetti Bolognese",
-      description: "Classic Italian pasta with rich, savory meat sauce",
-      price: 15.49,
-    },
-    {
-      id: "m3",
-      name: "Margherita Pizza",
-      description: "Stone-baked pizza with fresh tomatoes, mozzarella, and basil",
-      price: 9.99,
-    },
-    {
-      id: "m4",
-      name: "Cheeseburger Combo",
-      description: "Juicy cheeseburger with fries and a cold drink",
-      price: 11.49,
-    },
-    {
-      id: "m5",
-      name: "Vegan Buddha Bowl",
-      description: "A wholesome mix of quinoa, roasted veggies, and avocado",
-      price: 13.29,
-    },
-    {
-      id: "m6",
-      name: "Butter Chicken",
-      description: "Tender chicken in creamy, spiced tomato curry, served with naan",
-      price: 16.99,
-    },
-    {
-      id: "m7",
-      name: "Sushi Platter",
-      description: "Assorted sushi rolls with fresh fish, wasabi, and soy sauce",
-      price: 18.49,
-    },
-    {
-      id: "m8",
-      name: "Pancake Stack",
-      description: "Fluffy pancakes with maple syrup, butter, and fresh fruits",
-      price: 8.99,
-    },
-  ];
-  const dummymeal=meals.map((ourmeal)=><MealsItem key={ourmeal.id} id={ourmeal.id} name={ourmeal.name} description={ourmeal.description} price={ourmeal.price} ></MealsItem>)
-  return (
-   
-    <Card>
-    <ul>{dummymeal}</ul> 
-    </Card>
-  )
-}
+import RecipeForm from './RecipeForm';
+import Loading from './Loading';
 
-export default AvailbleMeals
+const AvailableMeals = () => {
+  const [meals, setMeals] = useState([]); // Manage meals in parent state
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const fetchMeals = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch(
+        'https://react-app1-940db-default-rtdb.firebaseio.com/myrecipe.json'
+      );
+      if (!res.ok) throw new Error('Failed to fetch meals!');
+      const data = await res.json();
+      const loadedMeals = [];
+      for (const key in data) {
+        loadedMeals.push({
+          id: key,
+          name: data[key].name,
+          description: data[key].description,
+          price: data[key].price,
+          image: data[key].img,
+        });
+      }
+      setMeals(loadedMeals);
+      setError(null);
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch meals on initial render
+  useEffect(() => {
+    fetchMeals();
+  }, []);
+
+  const handleMealAdded = () => {
+    fetchMeals(); // Refetch meals whenever a new meal is added
+  };
+
+  // Meal List
+  const mealList = meals.map((meal) => (
+    <MealsItem
+      key={meal.id}
+      id={meal.id}
+      name={meal.name}
+      description={meal.description}
+      price={meal.price}
+      img={meal.image}
+    />
+  ));
+
+  return (
+    <div className="flex flex-col items-center gap-8 p-6 bg-gray-50 min-h-screen w-screen">
+      <Card>
+        {loading && <Loading />}
+        {error && <p className="text-center text-red-500">{error}</p>}
+        {!loading && !error && meals.length === 0 && (
+          <p className="text-center text-gray-700">No meals available. Add some recipes!</p>
+        )}
+        <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 ">
+          {mealList}
+        </ul>
+      </Card>
+    </div>
+  );
+};
+
+
+export default AvailableMeals;
