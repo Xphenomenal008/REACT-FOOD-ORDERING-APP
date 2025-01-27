@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Ourcontext from "./Usecontext";
 
 const Consumecontext = (prop) => {
+  const [Login,setlogin]=useState(true)
   const [defaultCartState, setdefaultcartstate] = useState({
     items: [],
     totalAmount: 0,
@@ -82,6 +83,7 @@ const Consumecontext = (prop) => {
           clearcart: clearcart, // Explicitly add clearcart
           makehide: prop.makeHideCart,
           makevisible: prop.makeVisibleCart,
+          setlogin:setlogin
         }}
   
     >

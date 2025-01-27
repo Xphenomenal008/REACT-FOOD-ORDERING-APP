@@ -1,11 +1,13 @@
 import React, { useContext } from "react";
 import Mealsitemform from "./mealsitemform";
 import Ourcontext from "../usecontext/Usecontext";
+import { useSelector } from "react-redux";
 
 const MealsItem = (props) => {
-  let price = `$${props.price}`;
+  const login=useSelector(state=>state.login.login)
+  let price = `$${props.price}`; 
   const cartctx = useContext(Ourcontext);
-  console.log(cartctx)
+  
 
   const addcarthandler = (amount) => {
     cartctx.addItem({
